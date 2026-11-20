@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<meta name="description" content="AQLI KITOBLAR — bilim, biznes va rivojlanish kutubxonasi">
+<title>AQLI KITOBLAR</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d2e;--panel2:#18263a;--gold:#e5b45b;--text:#f5f3ee;--muted:#a8b3c4;--line:#29384d;--green:#65c69a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#101827ed;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.wrap{max-width:1100px;margin:auto;padding:16px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-size:21px;font-weight:900;letter-spacing:.5px}.brand span{color:var(--gold)}
+select,input,button{font:inherit}select{background:var(--panel2);color:var(--text);border:1px solid var(--line);padding:10px;border-radius:12px}
+.hero{margin:22px 0;padding:28px;border:1px solid #594a31;border-radius:22px;background:radial-gradient(circle at 90% 10%,#514027 0,transparent 38%),linear-gradient(135deg,#1b2b3d,#111827)}
+.eyebrow{color:var(--gold);font-weight:700;font-size:12px;letter-spacing:2px}.hero h1{font-size:clamp(28px,6vw,46px);line-height:1.08;margin:10px 0}.hero p{color:var(--muted);max-width:560px;line-height:1.6}
+.search{width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0 18px;outline:none}
+.search:focus{border-color:var(--gold)}
+.filters{display:flex;gap:8px;overflow:auto;padding:3px 0 14px}.chip{white-space:nowrap;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:9px 14px;cursor:pointer}.chip.active{background:var(--gold);color:#20170a;border-color:var(--gold);font-weight:800}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin:14px 0}.section-head h2{font-size:20px;margin:0}.muted{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat( auto-fit,minmax(210px,1fr));gap:14px}
+.book{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;min-height:250px}
+.cover{height:118px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,#31455b,#182536);margin-bottom:12px}
+.book h3{margin:0 0 5px;font-size:17px}.book .author{color:var(--muted);font-size:13px}.desc{color:#c5ceda;font-size:13px;line-height:1.5;margin:10px 0;flex:1}
+.tags{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.tag{font-size:11px;border-radius:20px;padding:5px 8px;background:#22344a;color:#cbd7e5}.tag.free{background:#173a30;color:#8be0b7}.tag.paid{background:#47371c;color:#f4ce82}
+.actions{display:flex;gap:8px;margin-top:12px}.btn{border:0;border-radius:11px;padding:10px 12px;cursor:pointer;font-weight:700}.primary{background:var(--gold);color:#241a09;flex:1}.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+.empty{padding:28px;text-align:center;color:var(--muted);background:var(--panel);border-radius:16px}
+footer{color:var(--muted);text-align:center;padding:35px 12px;font-size:12px}
+.modal{position:fixed;inset:0;background:#000a;z-index:10;display:none;align-items:flex-end;justify-content:center;padding:14px}.modal.show{display:flex}
+.sheet{width:min(680px,100%);max-height:88vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:22px}
+.close{float:right;background:var(--panel2);color:white;border:0;border-radius:9px;padding:8px 12px;cursor:pointer}.reader{white-space:pre-wrap;line-height:1.8;color:#e0e6ee}
+.small-note{font-size:12px;color:var(--muted);line-height:1.5}
+@media(min-width:700px){.modal{align-items:center}.hero{padding:42px}}
+</style>
+</head>
+<body>
+<header><div class="wrap top"><div class="brand">📚 AQLI <span>KITOBLAR</span></div><select id="lang" aria-label="Til"><option value="uz">O‘zbekcha</option><option value="ru">Русский</option><option value="en">English</option></select></div></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow" id="eyebrow">BILIM — ENG KATTA BOYLIK</div><h1 id="heroTitle">Har kuni ozroq o‘qi,<br>har kuni ko‘proq o‘s.</h1><p id="heroText">Biznes, moliya va shaxsiy rivojlanish bo‘yicha kitoblar olamiga xush kelibsiz.</p></section>
+<input id="search" class="search" placeholder="🔎 Kitob yoki muallifni qidiring..." autocomplete="off">
+<div class="filters" id="filters"></div>
+<div class="section-head"><h2 id="listTitle">Kitoblar kutubxonasi</h2><span class="muted" id="count"></span></div>
+<div class="grid" id="books"></div>
+<footer>© 2026 AQLI KITOBLAR · Bilim bilan kelajak sari<br><span class="small-note">Namuna katalog. Pullik kitoblar uchun hozircha haqiqiy to‘lov yoqilmagan.</span></footer>
+</main>
+<div class="modal" id="modal"><div class="sheet"><button class="close" id="close">✕</button><div id="modalContent"></div></div></div>
+<script>
+const books=[
+{id:1,title:{uz:"Boy ota, kambag‘al ota",ru:"Богатый папа, бедный папа",en:"Rich Dad Poor Dad"},author:"Robert Kiyosaki",cat:"Moliya",price:"free",emoji:"💰",desc:"Pul, aktivlar va moliyaviy savodxonlik haqida mashhur asar.",sample:"Bu kartochkada kitobning qisqa tanishtiruvi berilgan. Asarning asosiy g‘oyalaridan biri — pul haqida ongli fikrlashni o‘rganish, daromad va xarajatlarni rejalashtirish.\n\nO‘ylab ko‘ring: aktiv va majburiyat o‘rtasidagi farqni kundalik hayotda qanday qo‘llash mumkin?"},
+{id:2,title:{uz:"Atom odatlar",ru:"Атомные привычки",en:"Atomic Habits"},author:"James Clear",cat:"Rivojlanish",price:"free",emoji:"🌱",desc:"Kichik odatlar orqali kundalik hayotni yaxshilash haqida.",sample:"Katta o‘zgarishlar ko‘pincha kichik, muntazam qadamlardan boshlanadi.\n\nBugun bitta foydali odat tanlang: 10 daqiqa kitob o‘qish, reja yozish yoki yangi so‘z o‘rganish. Muhimi — davomiylik."},
+{id:3,title:{uz:"O‘yla va boy bo‘l",ru:"Думай и богатей",en:"Think and Grow Rich"},author:"Napoleon Hill",cat:"Biznes",price:"paid",emoji:"🚀",desc:"Maqsad qo‘yish, qat’iyat va muvaffaqiyat tamoyillari.",sample:"Maqsadni aniq belgilash va unga erishish uchun reja tuzish muhim. Har bir katta loyiha kichik, o‘lchanadigan vazifalarga bo‘linganda boshqarish osonlashadi."},
+{id:4,title:{uz:"Pul psixologiyasi",ru:"Психология денег",en:"The Psychology of Money"},author:"Morgan Housel",cat:"Moliya",price:"free",emoji:"🧠",desc:"Pul bilan bog‘liq qarorlar va inson xulqi haqida.",sample:"Moliyaviy qarorlar faqat matematikaga emas, odatlar va hissiyotlarga ham bog‘liq. Shoshilmasdan qaror qilish va uzoq muddatni hisobga olish foydali."},
+{id:5,title:{uz:"Noldan birga",ru:"От нуля к единице",en:"Zero to One"},author:"Peter Thiel",cat:"Biznes",price:"paid",emoji:"💡",desc:"Yangi g‘oyalar, startaplar va innovatsion fikrlash.",sample:"Yangi loyiha boshlashdan oldin odamlarning qaysi muammosini hal qilishingizni aniqlang. Yaxshi g‘oya — haqiqiy ehtiyojga javob beradigan g‘oya."},
+{id:6,title:{uz:"Diqqat",ru:"В работу с головой",en:"Deep Work"},author:"Cal Newport",cat:"Rivojlanish",price:"paid",emoji:"🎯",desc:"Chalg‘imasdan ishlash va diqqatni rivojlantirish.",sample:"Bir vazifaga alohida vaqt ajrating. Telefon bildirishnomalarini vaqtincha o‘chirib, ishni kichik bosqichlarga ajrating."},
+{id:7,title:{uz:"Kichik shahzoda",ru:"Маленький принц",en:"The Little Prince"},author:"Antoine de Saint-Exupéry",cat:"Badiiy",price:"free",emoji:"🌟",desc:"Do‘stlik, mehr va hayotga boshqacha qarash haqida.",sample:"Bu asar insoniy munosabatlar, mas’uliyat va mehr haqida o‘ylashga undaydi. Ba’zan muhim narsalarni tushunish uchun shoshilmasdan kuzatish kerak."}
+];
+const translations={
+uz:{eyebrow:"BILIM — ENG KATTA BOYLIK",hero:"Har kuni ozroq o‘qi,<br>har kuni ko‘proq o‘s.",sub:"Biznes, moliya va shaxsiy rivojlanish bo‘yicha kitoblar olamiga xush kelibsiz.",search:"🔎 Kitob yoki muallifni qidiring...",list:"Kitoblar kutubxonasi",all:"Barchasi",free:"Bepul",paid:"Pullik",read:"Tanishtiruvni o‘qish",saved:"Saqlangan",save:"♡ Saqlash",close:"Yopish",freeLabel:"BEPUL",paidLabel:"PULLIK",empty:"Kitob topilmadi.",intro:"Kitob haqida",sample:"Qisqa tanishtiruv",notice:"Bu to‘liq kitob matni emas, qisqa tanishtiruv."},
+ru:{eyebrow:"ЗНАНИЯ — ГЛАВНОЕ БОГАТСТВО",hero:"Читайте понемногу каждый день,<br>и каждый день растите.",sub:"Добро пожаловать в библиотеку бизнеса, финансов и саморазвития.",search:"🔎 Поиск книги или автора...",list:"Библиотека книг",all:"Все",free:"Бесплатно",paid:"Платно",read:"Читать описание",saved:"Сохранённое",save:"♡ Сохранить",close:"Закрыть",freeLabel:"БЕСПЛАТНО",paidLabel:"ПЛАТНО",empty:"Книги не найдены.",intro:"О книге",sample:"Краткое знакомство",notice:"Это краткое знакомство, а не полный текст книги."},
+en:{eyebrow:"KNOWLEDGE IS THE GREATEST WEALTH",hero:"Read a little every day,<br>grow a little every day.",sub:"Welcome to a library of business, finance and personal growth.",search:"🔎 Search books or authors...",list:"Book library",all:"All",free:"Free",paid:"Paid",read:"Read introduction",saved:"Saved",save:"♡ Save",close:"Close",freeLabel:"FREE",paidLabel:"PAID",empty:"No books found.",intro:"About the book",sample:"Short introduction",notice:"This is a short introduction, not the full book."}
+};
+let lang="uz",category="all",saved=JSON.parse(localStorage.getItem("ak_saved")||"[]");
+const $=id=>document.getElementById(id);
+function t(k){return translations[lang][k]}
+function title(b){return b.title[lang]}
+function renderFilters(){
+const cats=[["all",t("all")],["Biznes","Biznes"],["Moliya","Moliya"],["Rivojlanish","Rivojlanish"],["Badiiy","Badiiy"],["free",t("free")],["paid",t("paid")],["saved",t("saved")]];
+$("filters").innerHTML=cats.map(([v,n])=>`<button class="chip ${category===v?"active":""}" data-cat="${v}">${n}</button>`).join("");
+document.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{category=b.dataset.cat;render()});
+}
+function render(){
+renderFilters();let q=$("search").value.toLowerCase().trim();
+let arr=books.filter(b=>(category==="all"||category==="saved"?(category!=="saved"||saved.includes(b.id)):category==="free"||category==="paid"?b.price===category:b.cat===category)&&(!q||(title(b)+" "+b.author+" "+b.cat).toLowerCase().includes(q)));
+$("count").textContent=arr.length+"";
+$("books").innerHTML=arr.length?arr.map(b=>`<article class="book"><div class="cover">${b.emoji}</div><h3>${title(b)}</h3><div class="author">${b.author}</div><p class="desc">${b.desc}</p><div class="tags"><span class="tag">${b.cat}</span><span class="tag ${b.price}">${b.price==="free"?t("freeLabel"):t("paidLabel")}</span></div><div class="actions"><button class="btn primary" data-open="${b.id}">${t("read")}</button><button class="btn secondary" aria-label="Saqlash" data-save="${b.id}">${saved.includes(b.id)?"♥":"♡"}</button></div></article>`).join(""):`<div class="empty">${t("empty")}</div>`;
+document.querySelectorAll("[data-open]").forEach(x=>x.onclick=()=>openBook(+x.dataset.open));
+document.querySelectorAll("[data-save]").forEach(x=>x.onclick=()=>toggleSave(+x.dataset.save));
+}
+function toggleSave(id){saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];localStorage.setItem("ak_saved",JSON.stringify(saved));render()}
+function openBook(id){let b=books.find(x=>x.id===id);$("modalContent").innerHTML=`<div class="eyebrow">${b.cat.toUpperCase()}</div><h2>${title(b)}</h2><p class="muted">${b.author}</p><h3>${t("intro")}</h3><p>${b.desc}</p><h3>${t("sample")}</h3><p class="reader">${b.sample}</p><p class="small-note">${t("notice")}</p>${b.price==="paid"?'<p class="small-note">Pullik nashr: sotib olish funksiyasi keyingi versiyada, rasmiy va qonuniy manbalar orqali qo‘shiladi.</p>':""}`;$("modal").classList.add("show")}
+$("close").onclick=()=>$("modal").classList.remove("show");
+$("modal").onclick=e=>{if(e.target===$("modal"))$("modal").classList.remove("show")};
+$("search").oninput=render;
+$("lang").onchange=e=>{lang=e.target.value;applyLanguage();render()};
+function applyLanguage(){$("eyebrow").textContent=t("eyebrow");$("heroTitle").innerHTML=t("hero");$("heroText").textContent=t("sub");$("search").placeholder=t("search");$("listTitle").textContent=t("list")}
+applyLanguage();render();
+</script>
+</body></html>
